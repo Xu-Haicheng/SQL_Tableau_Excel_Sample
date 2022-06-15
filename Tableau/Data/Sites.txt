@@ -1,0 +1,6 @@
+Site_SiteCode,Site_SiteName
+CA,California
+FL,Florida
+IL,Illinois
+NY,New York
+TX,Texas

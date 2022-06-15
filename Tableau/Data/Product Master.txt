@@ -1,0 +1,7 @@
+Prod_ProductCategory,Prod_Product,Prod_ProductDescription
+Hip Implant,70041,Metal and Plastic Hip
+Hip Implant,70042,Metal and Crosslinked Polyethylene Hip
+Hip Implant,70051,Metal-on-Metal Hip (Titanium)
+Hip Implant,70052,Metal-on-Metal Hip (Stainless steel)
+Hip Implant,70053,Metal-on-Metal Hip (Cobalt chrome)
+Hip Implant,70061,Ceramic-on-Ceramic Hip

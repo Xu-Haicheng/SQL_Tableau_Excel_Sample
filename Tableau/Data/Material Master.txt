@@ -1,0 +1,9 @@
+Mat_MaterialCategory,Mat_Material,Mat_MaterialDescription
+Raw Material,300321,Titanium
+Raw Material,300328,Stainless steel
+Raw Material,300339,Cobalt chrome
+Raw Material,300773,Ceramic
+Raw Material,300922,Polyethylene (standard grade)
+Raw Material,300932,Polyethylene (highly crosslinked)
+Raw Material,400221,Silicone
+Raw Material,400222,Plaster
