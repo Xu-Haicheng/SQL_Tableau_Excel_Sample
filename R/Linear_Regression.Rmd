@@ -1,0 +1,162 @@
+---
+title: "Homework 5"
+author: |
+  | Haicheng Xu, James Bentley
+  | Math 189
+  | Spring 2023
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Conceptual Question
+
+1. Why do we need to check modeling assumptions for linear regression?
+
+Modeling assumptions are required for linear regression because if the true relationship is not a linear relationship, the model will not be accurate.
+
+## Application Question
+
+
+2. Plot bmi versus charges. Comment on any relationship you see.
+
+```{r 2}
+insurance = read.csv("insurance.csv")
+head(insurance)
+
+with(insurance,plot(bmi,charges))
+
+
+```
+
+There appears to be a weak positive correlation between bmi and charges. This is likely because individuals with higher bmi's are more likely to experience health problems.
+
+3. Make side-by-side box plots of charges for smokers and non-smokers. Does it appear that smoker’s have higher medical bills?
+
+```{r 3}
+boxplot(charges~smoker,data=insurance,main="Charge Difference Between Smokers and Non-Smokers")
+```
+
+Yes, smokers appear to have a significantly higher insurance charges compared to non-smokers. In this case, smokers seem to have a median charge of around \$35,000 versus non-smokers around \$7500. The 25 percentile charge of smokers is higher than the 75 percentile of non-smokers.
+
+4. Fit a linear model with charges as the response and bmi, and smoker as explanatory variables.
+
+```{r 4}
+
+lm.fit <- lm(charges ~ bmi + smoker, data = insurance)
+
+```
+
+
+a. Return the summary of your fitted model.
+
+```{r 4a}
+
+summary(lm.fit)
+
+```
+
+b. Provide an interpretation of the coefficient for smoker in your fitted model in the context of the problem.
+
+The coefficient on smoker is 23,593.98, meaning that the average smoker gets billed $23,593.98 by health insurance more than non-smokers in this dataset. 
+
+c. Provide an interpretation of the coefficient for bmi in your fitted model in the context of the problem.
+
+The coefficient for bmi is 388.02, which means that for every unit increase in bmi level results in a $388.02 increase in charges.
+
+d. Plot the model residuals against the model predicted values. Do you see any violations of linear model assumptions?
+
+```{r 4d}
+
+plot(predict(lm.fit), residuals(lm.fit))
+
+```
+
+There is a violation in the homoscedasticity of the data. There is more variance in the prediction error for smokers compared to non-smokers.
+
+e. Check whether the assumption of Normality of residuals holds. Include any relevant plots you used to make your assessment.
+
+There's a violation in Normality assumption since the right tail of the normal quantile plot is not resting on the line. Additionally, the residuals plot above shows a right skewed residuals: positive residuals goes to upwards of 30000, while the negative residuals are all greater than -20000.
+
+
+```{r 4e}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+```
+
+5. Fit the same linear model, except this time use log(charges).
+
+a. Return the summary of your fitted model.
+
+```{r 5a}
+
+lm.fit <- lm(log(charges) ~ bmi + smoker, data = insurance)
+summary(lm.fit)
+
+```
+
+b. Provide an interpretation of the coefficient for smoker in your fitted model in the context of the problem.
+
+The coefficient for smoker is about 1.515, which means smokers has a 151.5% greater charges than non-smokers. 
+
+c. Check whether the assumption of Normality of residuals holds. Include any relevant plots you used to make your assessment.
+
+As shown in the residual plots below, the log transformation of charges fixed the normality problem: the residuals are now roughly normally distributed.
+
+```{r 5c}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+```
+
+d. Comment on differences between the model you fit in (4) versus the model you fit in (5).
+
+We fitted the the model using charge in part four, while we fitted the same model except we log transformed charges. This change makes our interpretation of the coefficients different: it changed from unit increase to percentage increase for the dependent variable (charges) when there's a unit increase in the independent variables (bmi and smokers). This change also results in a difference in residual distribution, where the residuals of the transformed data is roughly normally distributed, which is not the case for the non-transformed data.
+
+6. Consider the model you fit in problem (5).
+
+a. Suppose we want to test whether bmi has a significant effect on predicted medical charges. Report the appropriate null and alternative hypotheses. Define any variables you use.
+
+Null hypothesis: Bmi has no significant effect on predicted medical charges, so the coefficient of bmi is equal to 0.
+
+Alternative hypothesis: Bmi has a significant effect on predicted medical charges, and the coefficient of bmi is not equal to 0.
+
+We will use bmi and charges. Bmi is body mass index which is a measure of one's body fat level. Charges is medical charges billed by health insurance.
+
+b. Perform the hypotheses test using your R output. Report your conclusion using 
+
+We are performing a two tail t test with alpha = 0.05:
+
+```{r 6b} 
+
+coefficient = .19629
+SE = .003033
+test_statistic <- (coefficient - 0) / SE
+test_statistic
+critical_value <- 1.96
+reject <- test_statistic > critical_value
+reject
+
+```
+
+Since our test-statistic of 64.7 is greater than the critical value of 1.645, we reject our null hypothesis at a 0.05 significance level.
+
+c. Provide a 95% confidence interval for your estimated coefficient for bmi.
+
+```{r 6c} 
+
+bottom <- coefficient - 2 * SE 
+top <- coefficient + 2 * SE
+
+bottom
+top
+
+```
+
+The 95% CI for the coefficient of bmi is [0.190224, 0.202356]
+
+----------------------------------
+
+Haicheng and James collaborated on the entire assignments equally.
+

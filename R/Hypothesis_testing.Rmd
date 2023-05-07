@@ -1,0 +1,126 @@
+---
+title: "Homework 4"
+author: |
+  | Haicheng Xu, James Bentley
+  | Math 189
+  | Spring 2023
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Conceptual Question
+
+1. It depends on the situation. For a COVID test, type II error is worse because it fails to identify COVID when the person has COVID. We'll rather have someone who doesn't have COVID to stay home for a week (type I) then having someone who has COVID spreading the disease (type II). For a FDA drug test, type I error would be worse because it claims a drug doesn't have severe side effects when it does, which can cause lives.
+
+## Application Question
+
+
+2. The USDA Women’s Health Survey dataset (nutrients.csv) contains five types of women’s nutrient intakes which were measured from a random sample of 737 women aged 25-50 years in United States. Please analyze the dataset according to the following steps:
+
+```{r 2}
+nutrients = read.csv("nutrients.csv")
+head(nutrients)
+```
+
+a. Calculate sample mean and sample standard deviation of each variable.
+
+```{r 2a}
+apply(nutrients,2,mean)
+apply(nutrients,2,sd)
+```
+
+b. The recommend intake amount of each nutrient is given in the following table. For each nutrient, apply a univariate t-test to test if the population mean of that variable equals the recommended value. Please set the significance level at α
+=0.05.
+
+```{r 2b}
+t.test(nutrients$calcium,mu=1000,conf.level=0.95)
+
+t.test(nutrients$iron,mu=15,conf.level=0.95)
+
+t.test(nutrients$protein,mu=60,conf.level=0.95)
+
+t.test(nutrients$vitaminA,mu=800,conf.level=0.95)
+
+t.test(nutrients$vitaminC,mu=75,conf.level=0.95)
+
+```
+
+c. If you are a data scientist who analyzed this dataset. Based on the results you obtained in step 2, how would you interpret your test results? Do you think the US Women meet the recommended nutrient intake amount? If not, what would you suggest to the public?
+
+Based on the results from part b, the 95% confidence interval for calcium and iron are below the recommended amount, protein intake is above average, and vitamin A and C includes the recommended amount in their 95% confidence interval. Therefore, we suggest the public to take more calcium and iron, while taking less protein.
+
+3. The Multiple Testing dataset (multiple.txt) is a simulated dataset which contains 50 variables and 100 observations per variable. Suppose we know that the first 10 variables have mean equal to 2 and the rest of them have mean equal to 0. Please analyze the dataset according to the following steps:
+
+```{r 4}
+multiple <- read.table("multiple.txt")
+head(multiple)
+
+```
+
+a. Apply a multiple testing to the population mean vector to test if it equals to a vector whose elements are all zeros. Please set the significance level at α=0.1.
+
+```{r 4a}
+alpha = .1
+m = length(multiple)
+pv <- numeric(m)
+for (j in 1:m) {
+  t_test <- t.test(multiple[,j], mu=0, conf.level=1-alpha)
+  pv[j] <- t_test$p.value
+}
+pv
+
+```
+
+b. Based on the test results in part a, calculate the following quantities: number of type I errors, number of type II errors, and FDP.
+
+```{r 4b}
+typeOneErrors <- sum(pv[11:50] <= .1)
+typeOneErrors
+typeTwoErrors <- sum(pv[1:10] >= 0.1)
+typeTwoErrors
+FDP <- sum(typeOneErrors) / sum(pv <= alpha)
+FDP
+```
+
+c. Redo the multiple testing in part a with Bonferroni correction (set α=0.1). Calculate the following quantities: number of type I errors, number of type II errors, and FDP.
+
+```{r 4c}
+
+rejectNullBF <- pv <= alpha / m
+
+typeOneErrorsBF <- sum(rejectNullBF[11:50])
+typeOneErrorsBF
+
+typeTwoErrorsBF <- sum(!rejectNullBF[1:10])
+typeTwoErrorsBF
+
+FDP <- sum(typeOneErrorsBF) / sum(rejectNullBF)
+FDP
+
+```
+
+d. Redo the multiple testing in part a with BH procedure (set α=0.1). Calculate the following quantities: number of type I errors, number of type II errors, and FDP. How does the results compared with the ones you obtained in part b and step c?
+
+```{r 4d}
+bh <- p.adjust(pv,method="BH")
+
+typeOneErrorsBH <- sum(bh[11:50] < 0.1) # false positive
+typeOneErrorsBH
+
+typeTwoErrorsBH <- sum(bh[1:10] > 0.1) # false negatives
+typeTwoErrorsBH
+
+FDP <- sum(bh[11:50] < 0.1)/sum(bh < 0.1) # false discovery proportion
+FDP
+
+# We got no false positives or negatives for part c and part d since both are adjusted for multiple testing. The values we obtained in part b is not adjusted, so we got 4 false positive tests and 0.2857143 for FDP.
+```
+
+
+----------------------------------
+
+Haicheng and James collaborated on the entire assignments equally.
+
